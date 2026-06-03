@@ -50,7 +50,12 @@ function createWindow(): void {
   })
 
   if (process.env.ELECTRON_RENDERER_URL) {
-    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
+    const tryLoad = (retries = 10) => {
+      mainWindow!.loadURL(process.env.ELECTRON_RENDERER_URL!).catch(() => {
+        if (retries > 0) setTimeout(() => tryLoad(retries - 1), 500)
+      })
+    }
+    tryLoad()
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
@@ -131,11 +136,18 @@ ipcMain.handle('convert-files', async (event, filePaths: string[]) => {
   }
 })
 
+// 16x16 transparent PNG — минимально валидная иконка для startDrag
+const DRAG_ICON = nativeImage.createFromBuffer(
+  Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAHklEQVQ4jWNgYGD4' +
+    'TwABAAD/AP+hc2rNNjQmAAAAAElFTkSuQmCC',
+    'base64'
+  )
+)
+
 ipcMain.on('start-drag', (event, filePath: string) => {
-  event.sender.startDrag({
-    file: filePath,
-    icon: nativeImage.createEmpty()
-  })
+  if (!existsSync(filePath)) return
+  event.sender.startDrag({ file: filePath, icon: DRAG_ICON })
 })
 
 ipcMain.on('window-minimize', () => mainWindow?.minimize())

@@ -124,8 +124,7 @@ export default function App() {
     }
   }
 
-  const handleDragOut = (e: React.DragEvent, outputPath: string) => {
-    e.preventDefault()
+  const handleDragOut = (_e: React.DragEvent, outputPath: string) => {
     window.api.startDrag(outputPath)
   }
 
@@ -221,12 +220,10 @@ export default function App() {
                     className={styles.dragHandle}
                     draggable
                     onDragStart={(e) => handleDragOut(e, file.outputPath!)}
-                    title="Drag to move file"
+                    title="Drag to export file"
                   >
-                    <IconDrag />
-                    <span className={styles.checkIcon}>
-                      <IconCheck />
-                    </span>
+                    <IconCheck />
+                    <span className={styles.dragLabel}>drag out</span>
                   </div>
                 )}
                 {file.status === 'error' && (
