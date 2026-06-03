@@ -2,6 +2,7 @@
   "name": "ogg-converter",
   "version": "1.0.0",
   "description": "Convert Telegram OGG voice messages to MP3",
+  "author": "kirdemorgan",
   "main": "out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
