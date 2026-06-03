@@ -11,7 +11,6 @@ declare global {
       checkFfmpeg: () => Promise<boolean>
       convertFiles: (paths: string[]) => Promise<void>
       onConvertStatus: (cb: (data: ConvertStatus) => void) => () => void
-      startDrag: (filePath: string) => void
       minimize: () => void
       close: () => void
     }

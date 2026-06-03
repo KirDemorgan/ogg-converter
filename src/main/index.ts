@@ -29,6 +29,9 @@ function createWindow(): void {
   const isMac = process.platform === 'darwin'
   const isWin = process.platform === 'win32'
 
+  const iconPath = join(__dirname, '../../resources/icon.png')
+  const appIcon = existsSync(iconPath) ? nativeImage.createFromPath(iconPath) : undefined
+
   mainWindow = new BrowserWindow({
     width: 520,
     height: 620,
@@ -37,7 +40,8 @@ function createWindow(): void {
     frame: false,
     titleBarStyle: isMac ? 'hiddenInset' : 'hidden',
     trafficLightPosition: { x: 16, y: 14 },
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#0b0b0d',
+    icon: appIcon,
     // TODO: macOS tray integration — show drop target in menu bar
     ...(isWin && {
       backgroundMaterial: 'acrylic'
@@ -136,19 +140,6 @@ ipcMain.handle('convert-files', async (event, filePaths: string[]) => {
   }
 })
 
-// 16x16 transparent PNG — минимально валидная иконка для startDrag
-const DRAG_ICON = nativeImage.createFromBuffer(
-  Buffer.from(
-    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAHklEQVQ4jWNgYGD4' +
-    'TwABAAD/AP+hc2rNNjQmAAAAAElFTkSuQmCC',
-    'base64'
-  )
-)
-
-ipcMain.on('start-drag', (event, filePath: string) => {
-  if (!existsSync(filePath)) return
-  event.sender.startDrag({ file: filePath, icon: DRAG_ICON })
-})
 
 ipcMain.on('window-minimize', () => mainWindow?.minimize())
 ipcMain.on('window-close', () => mainWindow?.close())

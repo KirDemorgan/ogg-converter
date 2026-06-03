@@ -29,9 +29,6 @@ contextBridge.exposeInMainWorld('api', {
     return () => ipcRenderer.removeListener('convert-status', handler)
   },
 
-  startDrag: (filePath: string): void =>
-    ipcRenderer.send('start-drag', filePath),
-
   minimize: (): void => ipcRenderer.send('window-minimize'),
   close: (): void => ipcRenderer.send('window-close')
 })
