@@ -5,9 +5,13 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
@@ -22,25 +26,33 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build (Windows)
-        if: matrix.platform == 'win'
-        run: npm run build && npx electron-builder --win
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: false
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate icons
+        run: node scripts/gen-icon.mjs
 
-      - name: Build (macOS)
+      - name: Generate icns (macOS only)
         if: matrix.platform == 'mac'
-        run: npm run build && npx electron-builder --mac
+        run: node scripts/gen-icns.mjs
+
+      - name: Build app
+        run: npm run build
+
+      - name: Package (Windows)
+        if: matrix.platform == 'win'
+        run: npx electron-builder --win --x64 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package (macOS)
+        if: matrix.platform == 'mac'
+        run: npx electron-builder --mac --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -49,11 +61,11 @@ jobs:
           path: |
             dist/*.exe
             dist/*.dmg
-            dist/*.zip
-          if-no-files-found: ignore
+          if-no-files-found: warn
 
   release:
     needs: build
+    if: always() && contains(needs.build.result, 'success')
     runs-on: ubuntu-latest
 
     steps:
@@ -67,5 +79,6 @@ jobs:
         with:
           files: dist/**/*
           generate_release_notes: true
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
