@@ -4,7 +4,7 @@ Drag-and-drop desktop app for converting Telegram voice messages (`.ogg`) to MP3
 
 Built with Electron + React. Uses your system `ffmpeg` — no bundled binaries.
 
-![screenshot_чв](docs/image.png)
+![screenshot_xd](docs/image.png)
 
 ---
 
