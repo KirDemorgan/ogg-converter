@@ -26,7 +26,7 @@ Built with Electron + React. Uses your system `ffmpeg` — no bundled binaries.
 
 Drop `.ogg` files onto the window. Converted MP3s land in `~/Downloads/converted` by default — you can change that in the footer.
 
-When a file is done, drag it out of the list directly into Finder / Explorer.
+When a file is done, it will appear in Finder / Explorer.
 
 ## Development
 
